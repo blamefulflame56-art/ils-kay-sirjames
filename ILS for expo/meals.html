@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2Fit - Meal Planner</title>
+<style>
+:root{
+    --bg:#0e141b;
+    --surface:#151d27;
+    --surface-elevated:#1b2430;
+    --surface-card:#161f2b;
+    --neon-blue:#ff7a45;
+    --lime-green:#7ee36b;
+    --primary:#ff7a45;
+    --secondary:#edf2f7;
+    --muted:#9aa9bd;
+    --accent-soft:rgba(126,227,107,0.14);
+    --danger:#ef4444;
+    --glow-blue:0 10px 24px rgba(255,122,69,0.22);
+}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Inter","Segoe UI",system-ui,sans-serif;
+}
+body{
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--secondary);
+    overflow-x:hidden;
+}
+.topbar{
+    position:sticky;
+    top:0;
+    z-index:30;
+    width:min(1100px,calc(100% - 28px));
+    margin:14px auto 0;
+    padding:12px 14px;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    background:rgba(10,15,22,0.88);
+    backdrop-filter:blur(20px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+}
+.topbar .header-logo{
+    font-size:1.18rem;
+    font-weight:900;
+    text-decoration:none;
+    letter-spacing:-0.02em;
+    background:linear-gradient(135deg,var(--neon-blue),var(--lime-green));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+.top-links{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    padding:6px;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px;
+    background:rgba(255,255,255,0.03);
+}
+.top-links .nav-link{
+    color:var(--muted);
+    text-decoration:none;
+    font-size:.9rem;
+    font-weight:700;
+    padding:9px 14px;
+    border-radius:12px;
+    transition:all .22s ease;
+}
+.top-links .nav-link:hover{
+    color:#f5f9ff;
+    background:rgba(255,255,255,0.09);
+    transform:translateY(-1px);
+}
+.top-links .nav-link.active{
+    color:#fff;
+    background:linear-gradient(135deg,rgba(255,122,69,0.24),rgba(126,227,107,0.18));
+    border:1px solid rgba(255,122,69,0.45);
+    box-shadow:0 6px 18px rgba(255,122,69,0.22);
+}
+body::before{
+    content:"";
+    position:fixed;
+    inset:-50%;
+    background:
+        radial-gradient(ellipse 80% 50% at 20% 10%,rgba(0,191,255,0.08) 0%,transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 80%,rgba(57,255,20,0.06) 0%,transparent 50%);
+    pointer-events:none;
+    z-index:0;
+}
+main{
+    max-width:980px;
+    margin:0 auto;
+    padding:40px 20px 60px;
+    position:relative;
+    z-index:1;
+}
+.title-wrap{
+    text-align:center;
+    margin-bottom:24px;
+}
+.title-wrap h1{
+    font-size:clamp(2rem,5vw,2.8rem);
+    margin-bottom:8px;
+    color:#fff;
+}
+.title-wrap p{
+    color:var(--muted);
+}
+section.glass{
+    background:var(--surface-card);
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.3);
+    border:1px solid rgba(255,255,255,0.06);
+    transition:border-color 0.3s,box-shadow 0.3s;
+}
+section.glass:hover{
+    border-color:rgba(0,191,255,0.15);
+    box-shadow:0 8px 40px rgba(0,0,0,0.4),0 0 20px rgba(0,191,255,0.05);
+}
+section.glass h2{
+    margin-bottom:20px;
+    font-size:1.4rem;
+    font-weight:800;
+    color:#fff;
+}
+.form-group{
+    margin-bottom:14px;
+}
+label{
+    font-weight:600;
+    font-size:0.9rem;
+    margin-bottom:8px;
+    display:block;
+    color:var(--secondary);
+}
+input,textarea{
+    width:100%;
+    padding:14px 18px;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:14px;
+    font-size:0.95rem;
+    background:var(--surface-elevated);
+    color:var(--secondary);
+    transition:border-color 0.2s,box-shadow 0.2s;
+}
+input:focus,textarea:focus{
+    outline:none;
+    border-color:var(--neon-blue);
+    box-shadow:0 0 0 3px rgba(0,191,255,0.2);
+}
+input::placeholder,textarea::placeholder{
+    color:var(--muted);
+}
+textarea{
+    min-height:80px;
+    resize:vertical;
+}
+.primary-btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--neon-blue),#0099cc);
+    color:#fff;
+    font-weight:700;
+    font-size:1rem;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 20px rgba(0,191,255,0.4);
+}
+.primary-btn:hover{
+    box-shadow:var(--glow-blue);
+    transform:translateY(-2px);
+}
+.danger-btn{
+    border:none;
+    background:none;
+    color:var(--danger);
+    font-weight:600;
+}
+.schedule-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+    font-size:.85rem;
+    color:var(--muted);
+}
+.meal-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:18px;
+}
+.meal-card{
+    border-radius:18px;
+    padding:18px;
+    background:var(--accent-soft);
+    border:1px solid rgba(0,0,0,0.05);
+}
+.meal-card h4{
+    margin-bottom:6px;
+}
+.meal-card small{
+    color:var(--muted);
+}
+.meal-total{
+    margin-top:16px;
+    padding:16px 20px;
+    border-radius:14px;
+    background:var(--surface-elevated);
+    border:1px dashed rgba(0,191,255,0.4);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+@media (max-width:640px){
+    .topbar{
+        width:calc(100% - 18px);
+        margin-top:10px;
+        padding:10px;
+    }
+    .top-links{
+        width:100%;
+        justify-content:center;
+        gap:6px;
+    }
+    section.glass{
+        padding:20px;
+    }
+}
+
+/* Unified gym dark theme */
+</style>
+</head>
+<body>
+<header class="topbar">
+    <a class="header-logo" href="Homepage.html">Go2Fit</a>
+    <nav class="top-links">
+        <a class="nav-link" href="Homepage.html">Home</a>
+        <a class="nav-link" href="workout.html">Workouts</a>
+        <a class="nav-link active" href="meals.html">Meals</a>
+        <a class="nav-link" href="scraft.html#dashboard">Dashboard</a>
+        <a class="nav-link" href="schedule.html">Schedule</a>
+        <a class="nav-link" href="fitrack.html">Account</a>
+    </nav>
+</header>
+<main>
+    <div class="title-wrap">
+        <h1>Go2Fit Meal Planner</h1>
+        <p>Meal Planner & Per-Meal Calculator</p>
+    </div>
+
+    <section class="glass" id="meals">
+        <h2>Meal Planner & Per-Meal Calculator</h2>
+        <form id="meal-form">
+            <div class="form-group">
+                <label>Meal Name</label>
+                <input type="text" id="meal-name" placeholder="e.g., Breakfast Smoothie" required>
+            </div>
+            <div class="form-group">
+                <label>Carbs (g)</label>
+                <input type="number" id="meal-carbs" min="0" required>
+            </div>
+            <div class="form-group">
+                <label>Protein (g)</label>
+                <input type="number" id="meal-protein" min="0" required>
+            </div>
+            <div class="form-group">
+                <label>Fat (g)</label>
+                <input type="number" id="meal-fat" min="0" required>
+            </div>
+            <div class="form-group">
+                <label>Notes / Ingredients</label>
+                <textarea id="meal-notes" placeholder="Add servings, time, reminders"></textarea>
+            </div>
+            <button class="primary-btn" type="submit">Add Meal & Calculate</button>
+        </form>
+        <div class="meal-total">
+            <span>Daily Meal Calories</span>
+            <strong id="meal-daily-total">0 kcal</strong>
+        </div>
+        <div class="meal-grid" id="meal-list" style="margin-top:18px;"></div>
+    </section>
+</main>
+
+<script>
+const STORAGE_KEY = "fittracker-users";
+const SESSION_KEY = "fittracker-session";
+const MEAL_STORAGE_KEY = "go2fit-meals";
+let mealData = [];
+
+function saveMeals(){
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    if (session?.email){
+        const users = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        const idx = users.findIndex(u => u.email === session.email);
+        if (idx !== -1){
+            users[idx].meals = mealData;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+        }
+    }
+    // Fallback cache for guest mode
+    localStorage.setItem(MEAL_STORAGE_KEY, JSON.stringify(mealData));
+}
+
+function loadMeals(){
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    if (session?.email){
+        const users = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        const user = users.find(u => u.email === session.email);
+        mealData = Array.isArray(user?.meals) ? user.meals : [];
+        return;
+    }
+    mealData = JSON.parse(localStorage.getItem(MEAL_STORAGE_KEY) || "[]");
+}
+
+function handleMeal(e){
+    e.preventDefault();
+    const name = document.getElementById("meal-name").value.trim();
+    const carbs = parseFloat(document.getElementById("meal-carbs").value) || 0;
+    const protein = parseFloat(document.getElementById("meal-protein").value) || 0;
+    const fat = parseFloat(document.getElementById("meal-fat").value) || 0;
+    const notes = document.getElementById("meal-notes").value.trim();
+    const calories = Math.round((carbs * 4) + (protein * 4) + (fat * 9));
+
+    mealData.unshift({ id: Date.now(), name, carbs, protein, fat, calories, notes });
+    renderMeals();
+    updateMealTotal();
+    saveMeals();
+    e.target.reset();
+}
+
+function renderMeals(){
+    const list = document.getElementById("meal-list");
+    if (!mealData.length){
+        list.innerHTML = '<p style="text-align:center;color:var(--muted);">No meals logged today.</p>';
+        return;
+    }
+    list.innerHTML = mealData.map(meal => `
+        <div class="meal-card">
+            <h4>${meal.name}</h4>
+            <small>${meal.calories} kcal · C${meal.carbs} / P${meal.protein} / F${meal.fat}</small>
+            ${meal.notes ? `<p style="margin-top:8px;">${meal.notes}</p>` : ""}
+            <div class="schedule-tags">
+                <span>Carbs ${meal.carbs}g</span>
+                <span>Protein ${meal.protein}g</span>
+                <span>Fat ${meal.fat}g</span>
+            </div>
+            <div style="margin-top:10px;text-align:right;">
+                <button class="danger-btn" onclick="deleteMeal(${meal.id})">Remove</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function deleteMeal(id){
+    mealData = mealData.filter(m => m.id !== id);
+    renderMeals();
+    updateMealTotal();
+    saveMeals();
+}
+
+function updateMealTotal(){
+    const total = mealData.reduce((sum, m) => sum + m.calories, 0);
+    document.getElementById("meal-daily-total").textContent = `${total} kcal`;
+}
+
+document.getElementById("meal-form").addEventListener("submit", handleMeal);
+loadMeals();
+renderMeals();
+updateMealTotal();
+</script>
+</body>
+</html>

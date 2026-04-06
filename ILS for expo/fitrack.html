@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiTrack – Account & Health</title>
+    <style>
+        :root {
+            --bg: #0e141b;
+            --bg-alt: #151d27;
+            --surface: #161f2b;
+            --surface-elevated: #1b2430;
+            --neon-green: #7ee36b;
+            --neon-blue: #ff7a45;
+            --neon-orange: #ff9a3d;
+            --text-primary: #edf2f7;
+            --text-secondary: #c5d0de;
+            --text-muted: #8ea0b6;
+            --glow-green: 0 8px 18px rgba(114, 201, 63, 0.18);
+            --glow-blue: 0 8px 18px rgba(255, 122, 69, 0.2);
+            --glow-orange: 0 8px 18px rgba(245, 158, 11, 0.16);
+            --primary: var(--neon-blue);
+            --secondary: var(--text-primary);
+            --muted: var(--text-muted);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* Ambient gradient lighting */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -50%;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0, 191, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(57, 255, 20, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 30% at 50% 50%, rgba(255, 107, 0, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, 20px) scale(1.1); }
+        }
+
+        header {
+            padding: 24px 8%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 15, 22, 0.88);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+            z-index: 20;
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .brand svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--neon-blue);
+            filter: drop-shadow(var(--glow-blue));
+        }
+
+        .header-link-back {
+            font-size: .9rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 9px 14px;
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+
+        .header-link-back:hover {
+            color: #f5f9ff;
+            background: rgba(255, 255, 255, 0.09);
+            transform: translateY(-1px);
+        }
+
+        .top-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .top-links .nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 700;
+            padding: 9px 14px;
+            border-radius: 12px;
+            transition: all .22s ease;
+        }
+
+        .top-links .nav-link:hover {
+            color: #f5f9ff;
+            background: rgba(255, 255, 255, 0.09);
+            transform: translateY(-1px);
+        }
+
+        .top-links .nav-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(255, 122, 69, 0.24), rgba(126, 227, 107, 0.18));
+            border: 1px solid rgba(255, 122, 69, 0.45);
+            box-shadow: 0 6px 18px rgba(255, 122, 69, 0.22);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .ghost-btn, .solid-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .ghost-btn {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            background: rgba(28, 28, 28, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .ghost-btn:hover {
+            border-color: var(--neon-orange);
+            box-shadow: var(--glow-orange);
+            transform: translateY(-2px);
+        }
+
+        .solid-btn {
+            border: none;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            color: var(--bg);
+            box-shadow: var(--glow-blue);
+        }
+
+        .solid-btn:hover {
+            box-shadow: var(--glow-green), 0 10px 30px rgba(57, 255, 20, 0.3);
+            transform: translateY(-2px);
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 40px 8%;
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        section.glass {
+            background: rgba(28, 28, 28, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        section.glass:hover {
+            border-color: var(--neon-blue);
+            box-shadow: var(--glow-blue), 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        section.glass h2 {
+            margin-bottom: 12px;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mfp-shell {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .header-main {
+                width: 100%;
+            }
+            .top-links {
+                width: 100%;
+                justify-content: center;
+                gap: 6px;
+            }
+            .mfp-shell {
+                grid-template-columns: 1fr;
+            }
+            .account-kpis {
+                grid-template-columns: 1fr;
+            }
+            .panel-actions .primary-btn {
+                width: 100%;
+            }
+        }
+
+        .mfp-sidebar {
+            background: rgba(37, 37, 37, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            height: fit-content;
+            position: sticky;
+            top: 92px;
+        }
+
+        .mfp-side-title {
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--neon-blue);
+        }
+
+        .mfp-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mfp-nav button {
+            border: none;
+            background: transparent;
+            text-align: left;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mfp-nav button:hover {
+            background: rgba(0, 191, 255, 0.1);
+            color: var(--neon-blue);
+        }
+
+        .mfp-nav button.active {
+            background: rgba(0, 191, 255, 0.2);
+            color: var(--neon-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        .mfp-content {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .account-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 14px 0 2px;
+        }
+
+        .account-kpi {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(17, 17, 17, 0.45);
+        }
+
+        .account-kpi span {
+            display: block;
+            font-size: .75rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            letter-spacing: .02em;
+            text-transform: uppercase;
+        }
+
+        .account-kpi strong {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        .mfp-card {
+            background: rgba(37, 37, 37, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .mfp-card:hover {
+            border-color: var(--neon-green);
+            box-shadow: var(--glow-green), 0 12px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .mfp-card h3 {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .mfp-sub {
+            color: var(--text-secondary);
+            font-size: .9rem;
+            margin-bottom: 12px;
+        }
+
+        .section-divider-title {
+            font-size: .78rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 6px 0 10px;
+            font-weight: 700;
+        }
+
+        .mfp-panel {
+            display: none;
+        }
+
+        .mfp-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            display: block;
+            color: var(--text-primary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: .95rem;
+            background: rgba(17, 17, 17, 0.8);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        input[readonly] {
+            background: rgba(17, 17, 17, 0.5);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            color: var(--bg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--glow-blue);
+        }
+
+        .primary-btn:hover {
+            box-shadow: var(--glow-green), 0 10px 30px rgba(57, 255, 20, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .profile {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 60%;
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(57, 255, 20, 0.2));
+            border: 1px solid var(--neon-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--neon-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .mini-muted {
+            color: var(--text-secondary);
+            font-size: .9rem;
+        }
+
+        .health-summary-box {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            background: rgba(17, 17, 17, 0.38);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .panel-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 4px;
+        }
+
+        .panel-actions .primary-btn {
+            width: auto;
+            min-width: 190px;
+            padding-inline: 20px;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 14px 0;
+        }
+
+        .color-block {
+            border-radius: 20px;
+            padding: 18px;
+            color: var(--text-primary);
+            margin-top: 16px;
+        }
+
+        .lilac {
+            background: rgba(255, 107, 0, 0.1);
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .schedule-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: .85rem;
+            color: var(--text-secondary);
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 12px;
+        }
+
+        .chip {
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(37, 37, 37, 0.6);
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .chip:hover {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        .chip.selected {
+            border-color: var(--neon-green);
+            background: rgba(57, 255, 20, 0.15);
+            color: var(--neon-green);
+            box-shadow: var(--glow-green);
+        }
+
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-trigger {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .profile-trigger:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-trigger:focus {
+            outline: 2px solid rgba(0, 191, 255, 0.35);
+            outline-offset: 6px;
+            border-radius: 16px;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            width: 240px;
+            background: rgba(28, 28, 28, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), var(--glow-blue);
+            padding: 8px;
+            display: none;
+            z-index: 30;
+        }
+
+        .profile-dropdown.open {
+            display: block;
+        }
+
+        .profile-dropdown button {
+            width: 100%;
+            text-align: left;
+            display: block;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .profile-dropdown button:hover {
+            background: rgba(0, 191, 255, 0.15);
+            color: var(--neon-blue);
+        }
+
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        #authOverlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(28, 28, 28, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 18px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), var(--glow-blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal h3 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: .9rem;
+        }
+
+        .toggle-auth button {
+            border: none;
+            background: none;
+            color: var(--neon-blue);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-auth button:hover {
+            color: var(--neon-green);
+            text-decoration: underline;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Unified gym dark theme */
+
+    </style>
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <header>
+        <div class="header-main">
+            <div class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2zm0 2.3l-6 3.4v6.6l6 3.4 6-3.4V7.7l-6-3.4z"/></svg>
+                FiTrack
+            </div>
+            <nav class="top-links" aria-label="Primary navigation">
+                <a class="nav-link" href="Homepage.html">Home</a>
+                <a class="nav-link" href="workout.html">Workouts</a>
+                <a class="nav-link" href="meals.html">Meals</a>
+                <a class="nav-link" href="scraft.html#dashboard">Dashboard</a>
+                <a class="nav-link" href="schedule.html">Schedule</a>
+                <a class="nav-link active" href="fitrack.html">Account</a>
+            </nav>
+        </div>
+        <div class="actions" id="authActions">
+            <button class="ghost-btn" onclick="openAuth('login')">Login</button>
+            <button class="solid-btn" onclick="openAuth('signup')">Sign Up</button>
+        </div>
+        <div class="profile profile-menu" id="profileBox" style="display:none;">
+            <div class="profile-trigger" id="profileTrigger" tabindex="0" aria-haspopup="menu" aria-expanded="false">
+                <div class="avatar" id="profileAvatar">FT</div>
+                <div>
+                    <div id="profileName" style="font-weight:700;"></div>
+                    <small id="profileEmail" style="color:var(--text-secondary);"></small>
+                </div>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown" role="menu" aria-label="Profile menu">
+                <button type="button" role="menuitem" data-close-profile-menu="true" onclick="goToSection('account')">
+                    Account Center
+                </button>
+                <button type="button" role="menuitem" data-close-profile-menu="true" onclick="goToSection('health-profile')">
+                    Health Conditions
+                </button>
+                <div class="divider" style="margin:8px 0;"></div>
+                <button type="button" role="menuitem" onclick="logout()" data-close-profile-menu="true">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="glass" id="account">
+            <h2>Account Center</h2>
+            <p class="mini-muted">Manage your basic info. This is saved per account and shared with your main FiTrack dashboard.</p>
+            <div class="divider"></div>
+            <div class="mfp-shell" id="accountShell">
+                <aside class="mfp-sidebar">
+                    <div class="mfp-side-title">Settings</div>
+                    <div class="mfp-nav" id="accountNav">
+                        <button type="button" class="active" data-panel="panel-account">Account Center</button>
+                        <button type="button" data-panel="panel-health">Health Conditions</button>
+                    </div>
+                </aside>
+
+                <div class="mfp-content">
+                    <div class="mfp-panel active" id="panel-account">
+                        <div class="mfp-card">
+                            <h3>Account</h3>
+                            <div class="mfp-sub">Update your profile details. (Name and email are read-only.)</div>
+                            <div class="account-kpis">
+                                <div class="account-kpi">
+                                    <span>Profile Status</span>
+                                    <strong id="profile-status-text">Not completed</strong>
+                                </div>
+                                <div class="account-kpi">
+                                    <span>Conditions</span>
+                                    <strong id="profile-condition-count">0 selected</strong>
+                                </div>
+                                <div class="account-kpi">
+                                    <span>Membership</span>
+                                    <strong>Go2Fit Standard</strong>
+                                </div>
+                            </div>
+                            <div class="section-divider-title">Personal information</div>
+                            <form id="account-form" class="two-col">
+                                <div>
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="account-name" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" id="account-email" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <input type="text" id="account-country" placeholder="e.g., Philippines">
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <select id="account-gender">
+                                            <option value="">Select gender</option>
+                                            <option value="female">Female</option>
+                                            <option value="male">Male</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Age</label>
+                                        <input type="number" id="account-age" min="10" max="90" placeholder="Years">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Weight (kg)</label>
+                                        <input type="number" id="account-weight" min="30" max="250" step="0.1" placeholder="e.g., 70">
+                                    </div>
+                                </div>
+                                <div style="grid-column:1 / -1;">
+                                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:6px;">Health conditions</label>
+                                    <div class="health-summary-box">
+                                        <p class="mini-muted" id="account-health-summary">No conditions set.</p>
+                                    </div>
+                                </div>
+                                <div style="grid-column:1 / -1;">
+                                    <div class="panel-actions">
+                                        <button class="primary-btn" type="submit">Save Account Info</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mfp-panel" id="panel-health">
+                        <div class="mfp-card">
+                            <div id="health-profile">
+                                <h3>Health Conditions</h3>
+                                <div class="mfp-sub">Tap to select. Add optional custom conditions below.</div>
+                                <form id="profile-form">
+                                    <label style="font-weight:600;font-size:0.9rem;display:block;margin-bottom:6px;">Select conditions</label>
+                                    <div class="chips" id="health-chip-list">
+                                        <div class="chip" data-condition="heart disease">Heart disease</div>
+                                        <div class="chip" data-condition="asthma">Asthma</div>
+                                        <div class="chip" data-condition="diabetes">Diabetes</div>
+                                        <div class="chip" data-condition="hypertension">Hypertension</div>
+                                        <div class="chip" data-condition="joint pain">Joint pain</div>
+                                        <div class="chip" data-condition="none">None</div>
+                                    </div>
+                                    <div class="form-group" style="margin-top:10px;">
+                                        <label>Other (comma-separated, optional)</label>
+                                        <input type="text" id="health-conditions-custom" placeholder="e.g., anemia, COPD">
+                                    </div>
+                                    <button class="primary-btn" type="submit">Save Health Conditions</button>
+                                    <div class="schedule-tags" id="condition-tags" style="margin-top:10px;"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="authOverlay">
+        <div class="modal">
+            <h3 id="auth-title">Sign Up</h3>
+            <form id="auth-form">
+                <div class="form-group" id="name-field">
+                    <label>Full Name</label>
+                    <input type="text" id="auth-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="auth-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" required>
+                </div>
+                <button class="primary-btn" type="submit" id="auth-submit">Create Account</button>
+            </form>
+            <p class="toggle-auth" id="auth-toggle-text">Already have an account?
+                <button type="button" onclick="switchAuth()">Login</button>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Animated particles background
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        const particles = [];
+        const particleCount = 50;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            
+            draw() {
+                ctx.fillStyle = `rgba(0, 191, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+
+        const STORAGE_KEY="fittracker-users";
+        const SESSION_KEY="fittracker-session";
+        const CONDITION_OPTIONS=["heart disease","asthma","diabetes","hypertension","joint pain","none"];
+        let authMode="signup";
+        let currentUser=null;
+
+        document.addEventListener("DOMContentLoaded",init);
+        document.getElementById("auth-form").addEventListener("submit",handleAuth);
+        document.getElementById("profile-form").addEventListener("submit",handleProfileSave);
+        document.getElementById("account-form").addEventListener("submit",handleAccountSave);
+
+        // profile dropdown menu
+        const profileTrigger=document.getElementById("profileTrigger");
+        const profileDropdown=document.getElementById("profileDropdown");
+
+        function goToSection(id){
+            // When inside Account Center, switch panels instead of just scrolling
+            if(id==="account"){
+                setAccountPanel("panel-account");
+                const top=document.getElementById("account");
+                if(top) top.scrollIntoView({behavior:"smooth",block:"start"});
+                return;
+            }
+            if(id==="health-profile"){
+                setAccountPanel("panel-health");
+                const top=document.getElementById("account");
+                if(top) top.scrollIntoView({behavior:"smooth",block:"start"});
+                return;
+            }
+            const el=document.getElementById(id);
+            if(!el) return;
+            el.scrollIntoView({behavior:"smooth",block:"start"});
+        }
+
+        function setAccountPanel(panelId){
+            const panels=document.querySelectorAll(".mfp-panel");
+            panels.forEach(p=>p.classList.toggle("active", p.id===panelId));
+            const navBtns=document.querySelectorAll("#accountNav button[data-panel]");
+            navBtns.forEach(b=>b.classList.toggle("active", b.getAttribute("data-panel")===panelId));
+        }
+
+        function openProfileMenu(){
+            if(!profileDropdown || !profileTrigger) return;
+            profileDropdown.classList.add("open");
+            profileTrigger.setAttribute("aria-expanded","true");
+        }
+        function closeProfileMenu(){
+            if(!profileDropdown || !profileTrigger) return;
+            profileDropdown.classList.remove("open");
+            profileTrigger.setAttribute("aria-expanded","false");
+        }
+        function toggleProfileMenu(){
+            if(!profileDropdown) return;
+            if(profileDropdown.classList.contains("open")) closeProfileMenu();
+            else openProfileMenu();
+        }
+        if(profileTrigger){
+            profileTrigger.addEventListener("click",(e)=>{
+                e.stopPropagation();
+                toggleProfileMenu();
+            });
+            profileTrigger.addEventListener("keydown",(e)=>{
+                if(e.key==="Enter" || e.key===" "){
+                    e.preventDefault();
+                    toggleProfileMenu();
+                }else if(e.key==="Escape"){
+                    closeProfileMenu();
+                }
+            });
+        }
+        document.addEventListener("click",(e)=>{
+            if(!profileDropdown || !profileTrigger) return;
+            if(profileDropdown.classList.contains("open")){
+                const inside = profileDropdown.contains(e.target) || profileTrigger.contains(e.target);
+                if(!inside) closeProfileMenu();
+            }
+        });
+        document.addEventListener("keydown",(e)=>{
+            if(e.key==="Escape") closeProfileMenu();
+        });
+        if(profileDropdown){
+            profileDropdown.addEventListener("click",(e)=>{
+                const target=e.target;
+                if(target && target.getAttribute && target.getAttribute("data-close-profile-menu")==="true"){
+                    closeProfileMenu();
+                }
+            });
+        }
+
+        // chip toggles for conditions
+        document.getElementById("health-chip-list").addEventListener("click",(e)=>{
+            const chip=e.target.closest(".chip");
+            if(!chip) return;
+            const val=chip.getAttribute("data-condition");
+            // if "none" is chosen, clear others
+            if(val==="none"){
+                document.querySelectorAll("#health-chip-list .chip").forEach(c=>{
+                    if(c.getAttribute("data-condition")==="none"){
+                        c.classList.toggle("selected");
+                    }else{
+                        c.classList.remove("selected");
+                    }
+                });
+                return;
+            }
+            // toggle selected
+            chip.classList.toggle("selected");
+            // if selecting something else, remove "none"
+            const noneChip=document.querySelector('#health-chip-list .chip[data-condition="none"]');
+            if(noneChip) noneChip.classList.remove("selected");
+        });
+
+        // sidebar navigation
+        document.getElementById("accountNav").addEventListener("click",(e)=>{
+            const btn=e.target.closest("button[data-panel]");
+            if(!btn) return;
+            setAccountPanel(btn.getAttribute("data-panel"));
+        });
+
+        function init(){
+            const session=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");
+            if(session){setUserSession(session);}else{updateUIForGuest();}
+        }
+
+        function handleAuth(e){
+            e.preventDefault();
+            const name=document.getElementById("auth-name").value.trim();
+            const email=document.getElementById("auth-email").value.trim().toLowerCase();
+            const password=document.getElementById("auth-password").value;
+            const users=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+            if(authMode==="signup"){
+                if(users.find(u=>u.email===email)){alert("Email already registered.");return;}
+                users.push({
+                    name,
+                    email, 
+                    password,
+                    stats:{steps:0,calories:0,distance:0,minutes:0},
+                    workouts:[],
+                    schedule:[],
+                    meals:[],
+                    healthConditions:[],
+                    profile:{gender:"",age:null,country:"",weight:null}
+                });
+                localStorage.setItem(STORAGE_KEY,JSON.stringify(users));
+                localStorage.setItem(SESSION_KEY,JSON.stringify({email}));
+                setUserSession({email});
+            }else{
+                const user=users.find(u=>u.email===email&&u.password===password);
+                if(!user){alert("Invalid credentials.");return;}
+                localStorage.setItem(SESSION_KEY,JSON.stringify({email}));
+                setUserSession({email});
+            }
+            closeAuth();
+        }
+
+        function setUserSession(session){
+            closeProfileMenu();
+            const users=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+            const user=users.find(u=>u.email===session.email);
+            if(!user){updateUIForGuest();return;}
+            if(!user.healthConditions) user.healthConditions=[];
+            if(!user.profile) user.profile={gender:"",age:null,country:"",weight:null};
+
+            document.getElementById("authActions").style.display="none";
+            document.getElementById("profileBox").style.display="flex";
+            document.getElementById("profileName").textContent=user.name;
+            document.getElementById("profileEmail").textContent=user.email;
+            document.getElementById("profileAvatar").textContent=user.name.split(" ").map(n=>n[0]).join("").slice(0,2).toUpperCase();
+
+            currentUser=user;
+            hydrateProfileUI(user);
+            hydrateAccountUI(user);
+        }
+
+        function updateUIForGuest(){
+            closeProfileMenu();
+            document.getElementById("authActions").style.display="flex";
+            document.getElementById("profileBox").style.display="none";
+            currentUser=null;
+            hydrateProfileUI({healthConditions:[]});
+            hydrateAccountUI(null);
+        }
+
+        function updateUserData(){
+            const session=JSON.parse(localStorage.getItem(SESSION_KEY)||"null");
+            if(!session)return;
+            const users=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+            const idx=users.findIndex(u=>u.email===session.email);
+            if(idx===-1)return;
+            users[idx].healthConditions=currentUser?.healthConditions||users[idx].healthConditions||[];
+            users[idx].profile=currentUser?.profile||users[idx].profile||{};
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(users));
+        }
+
+        function isLoggedIn(){return !!localStorage.getItem(SESSION_KEY);}
+
+        function openAuth(mode="signup"){
+            authMode=mode;
+            document.getElementById("authOverlay").classList.add("active");
+            document.getElementById("auth-title").textContent=mode==="signup"?"Create Account":"Login";
+            document.getElementById("auth-submit").textContent=mode==="signup"?"Create Account":"Login";
+            document.getElementById("name-field").style.display=mode==="signup"?"block":"none";
+            document.getElementById("auth-toggle-text").innerHTML=mode==="signup"
+                ? 'Already have an account? <button type="button" onclick="switchAuth()">Login</button>'
+                : 'Need an account? <button type="button" onclick="switchAuth()">Sign up</button>';
+        }
+
+        function switchAuth(){openAuth(authMode==="signup"?"login":"signup");}
+
+        function closeAuth(){
+            document.getElementById("authOverlay").classList.remove("active");
+            document.getElementById("auth-form").reset();
+        }
+
+        function logout(){
+            localStorage.removeItem(SESSION_KEY);
+            updateUIForGuest();
+        }
+
+        function hydrateProfileUI(user){
+            const list=user?.healthConditions||[];
+            setConditionSelections(list);
+            renderConditionTags(list);
+        }
+
+        function hydrateAccountUI(user){
+            const nameInput=document.getElementById("account-name");
+            const emailInput=document.getElementById("account-email");
+            const genderSelect=document.getElementById("account-gender");
+            const ageInput=document.getElementById("account-age");
+            const countryInput=document.getElementById("account-country");
+            const weightInput=document.getElementById("account-weight");
+            const healthSummary=document.getElementById("account-health-summary");
+            const profileStatusText=document.getElementById("profile-status-text");
+            const profileConditionCount=document.getElementById("profile-condition-count");
+
+            if(!user){
+                nameInput.value="";
+                emailInput.value="";
+                genderSelect.value="";
+                ageInput.value="";
+                countryInput.value="";
+                weightInput.value="";
+                healthSummary.textContent="No conditions set.";
+                if(profileStatusText) profileStatusText.textContent="Not completed";
+                if(profileConditionCount) profileConditionCount.textContent="0 selected";
+                return;
+            }
+            nameInput.value=user.name||"";
+            emailInput.value=user.email||"";
+            const profile=user.profile||{};
+            genderSelect.value=profile.gender||"";
+            ageInput.value=profile.age!=null && profile.age!==undefined ? profile.age : "";
+            countryInput.value=profile.country||"";
+            weightInput.value=profile.weight!=null && profile.weight!==undefined ? profile.weight : "";
+            const conditions=user.healthConditions||[];
+            healthSummary.textContent=conditions.length
+                ? conditions.join(", ")
+                : "No conditions set.";
+            if(profileConditionCount){
+                profileConditionCount.textContent=`${conditions.length} selected`;
+            }
+
+            const profileFields=[profile.gender, profile.age, profile.country, profile.weight];
+            const filledCount=profileFields.filter(v=>v!=="" && v!==null && v!==undefined).length;
+            if(profileStatusText){
+                profileStatusText.textContent=filledCount >= 3 ? "Almost complete" : filledCount > 0 ? "In progress" : "Not completed";
+            }
+        }
+
+        function handleAccountSave(e){
+            e.preventDefault();
+            if(!isLoggedIn()){alert("Login to save account info.");return;}
+            if(!currentUser) currentUser={};
+            const gender=document.getElementById("account-gender").value;
+            const ageRaw=document.getElementById("account-age").value;
+            const country=document.getElementById("account-country").value.trim();
+            const weightRaw=document.getElementById("account-weight").value;
+            const age=ageRaw?parseInt(ageRaw,10):null;
+            const weight=weightRaw?parseFloat(weightRaw):null;
+            currentUser.profile={
+                ...(currentUser.profile||{}),
+                gender,
+                age,
+                country,
+                weight
+            };
+            hydrateAccountUI(currentUser);
+            updateUserData();
+            alert("Account info saved.");
+        }
+
+        function handleProfileSave(e){
+            e.preventDefault();
+            if(!isLoggedIn()){alert("Login to save profile.");return;}
+            const selections=getConditionSelections();
+            const customRaw=document.getElementById("health-conditions-custom").value;
+            const customParsed=(customRaw||"").split(",").map(s=>s.trim()).filter(Boolean);
+            const all=[...selections,...customParsed];
+            const dedup=[...new Set(all.map(s=>s.toLowerCase()))];
+            if(!currentUser) currentUser={};
+            currentUser.healthConditions=dedup;
+            renderConditionTags(dedup);
+            hydrateAccountUI(currentUser);
+            updateUserData();
+        }
+
+        function renderConditionTags(conditions){
+            const wrap=document.getElementById("condition-tags");
+            if(!conditions.length){wrap.innerHTML='<span class="mini-muted">No conditions set.</span>';return;}
+            wrap.innerHTML=conditions.map(c=>`<span class="mini-muted">${escapeHtml(c)}</span>`).join("");
+        }
+
+        function setConditionSelections(list){
+            const chips=document.querySelectorAll("#health-chip-list .chip");
+            const lower=list.map(s=>s.toLowerCase());
+            chips.forEach(chip=>{
+                const val=chip.getAttribute("data-condition");
+                if(lower.includes(val)){
+                    chip.classList.add("selected");
+                }else{
+                    chip.classList.remove("selected");
+                }
+            });
+            const custom=list.filter(c=>!CONDITION_OPTIONS.includes(c));
+            document.getElementById("health-conditions-custom").value=custom.join(", ");
+        }
+
+        function getConditionSelections(){
+            const chips=document.querySelectorAll("#health-chip-list .chip.selected");
+            return Array.from(chips).map(chip=>chip.getAttribute("data-condition"));
+        }
+
+        function escapeHtml(str){
+            return String(str)
+                .replaceAll("&","&amp;")
+                .replaceAll("<","&lt;")
+                .replaceAll(">","&gt;")
+                .replaceAll('"',"&quot;")
+                .replaceAll("'","&#039;");
+        }
+    </script>
+</body>
+</html>
