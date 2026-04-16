@@ -65,17 +65,20 @@ body::before{
 }
 
 header{
-    padding:20px 6%;
+    width:min(1160px,calc(100% - 28px));
+    margin:14px auto 0;
+    padding:12px 16px;
     display:flex;
     flex-wrap:wrap;
     gap:20px;
     justify-content:space-between;
     align-items:center;
     position:sticky;
-    top:0;
-    background:rgba(10,15,22,0.88);
+    top:12px;
+    background:rgba(28, 28, 28, 0.8);
     backdrop-filter:blur(20px);
-    border-bottom:1px solid rgba(255,255,255,0.09);
+    border:1px solid rgba(148,163,184,0.22);
+    border-radius:16px;
     z-index:20;
 }
 
@@ -100,9 +103,9 @@ nav{
     gap:8px;
     flex-wrap:wrap;
     padding:6px;
-    border:1px solid rgba(255,255,255,0.08);
+    border:1px solid rgba(148,163,184,0.18);
     border-radius:14px;
-    background:rgba(255,255,255,0.03);
+    background:rgba(28, 28, 28, 0.8);
 }
 
 nav a{
@@ -183,6 +186,9 @@ nav a.active{
     font-size:.85rem;
     font-weight:600;
 }
+.auth-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.auth-back-btn{border:1px solid rgba(255,255,255,0.18);background:transparent;color:var(--muted);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+.auth-back-btn:hover{background:rgba(255,255,255,0.08);color:var(--secondary)}
 .profile-dropdown a{
     text-decoration:none;
 }
@@ -1067,6 +1073,11 @@ textarea{
 }
 
 @media(max-width:700px){
+    header{
+        width:calc(100% - 18px);
+        margin-top:10px;
+        padding:10px;
+    }
     nav{
         justify-content:center;
         width:100%;
@@ -1526,6 +1537,9 @@ textarea{
 
     <div id="authOverlay">
     <div class="modal">
+        <div class="auth-topbar">
+            <button type="button" class="auth-back-btn" onclick="closeAuth()">Return</button>
+        </div>
         <h3 id="auth-title">Sign Up</h3>
         <form id="auth-form">
             <div class="form-group" id="name-field">
@@ -1574,6 +1588,7 @@ textarea{
 <script>
 const STORAGE_KEY="fittracker-users";
 const SESSION_KEY="fittracker-session";
+const VERIFY_KEY="fittracker-pending-verification";
 let workoutData=[],scheduleData=[],mealData=[];
 let authMode="signup";
 let currentUser=null;
@@ -1951,7 +1966,8 @@ function handleAuth(e){
     const users=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
     if(authMode==="signup"){
         if(users.find(u=>u.email===email)){alert("Email already registered.");return;}
-        users.push({
+        const code=String(Math.floor(100000 + Math.random()*900000));
+        localStorage.setItem(VERIFY_KEY,JSON.stringify({
             name,
             email,
             password,
@@ -1960,14 +1976,34 @@ function handleAuth(e){
             schedule:[],
             meals:[],
             healthConditions:[],
-            profile:{gender:"",age:null,country:"",weight:null}
+            profile:{gender:"",age:null,country:"",weight:null},
+            verified:false,
+            code
+        }));
+        alert(`Demo verification code for ${email}: ${code}`);
+        const enteredCode=prompt("Enter the 6-digit verification code sent to your email:");
+        const pending=JSON.parse(localStorage.getItem(VERIFY_KEY)||"null");
+        if(!pending || enteredCode!==pending.code){alert("Verification failed. Please try signing up again.");return;}
+        users.push({
+            name:pending.name,
+            email:pending.email,
+            password:pending.password,
+            stats:pending.stats,
+            workouts:pending.workouts,
+            schedule:pending.schedule,
+            meals:pending.meals,
+            healthConditions:pending.healthConditions,
+            profile:pending.profile,
+            verified:true
         });
         localStorage.setItem(STORAGE_KEY,JSON.stringify(users));
-        localStorage.setItem(SESSION_KEY,JSON.stringify({email}));
-        setUserSession({email});
+        localStorage.removeItem(VERIFY_KEY);
+        localStorage.setItem(SESSION_KEY,JSON.stringify({email:pending.email}));
+        setUserSession({email:pending.email});
     }else{
         const user=users.find(u=>u.email===email&&u.password===password);
         if(!user){alert("Invalid credentials.");return;}
+        if(user.verified===false){alert("This account is not verified yet.");return;}
         localStorage.setItem(SESSION_KEY,JSON.stringify({email}));
         setUserSession({email});
     }

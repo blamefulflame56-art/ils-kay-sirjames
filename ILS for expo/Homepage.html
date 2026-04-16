@@ -5,44 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Go2Fit - Light Fitness Home</title>
 <style>
-:root{--bg:#0e141b;--canvas:#151d27;--panel:#161f2b;--ink:#edf2f7;--muted:#9aa9bd;--line:#273447;--accent:#7ee36b;--accent-soft:rgba(126,227,107,.14);--cta:#ff7a45;--shadow:0 14px 34px rgba(0,0,0,.35)}
+:root{--bg:#f4f7fb;--canvas:linear-gradient(180deg,#f7f9fc,#eef2f7);--panel:rgba(255,255,255,.72);--ink:#0f172a;--muted:#64748b;--line:rgba(148,163,184,.22);--accent:#22c55e;--accent-soft:rgba(34,197,94,.12);--cta:#ff7a45;--shadow:0 18px 40px rgba(15,23,42,.08)}
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter","Segoe UI",system-ui,sans-serif}
-body{background:var(--bg);color:var(--ink)}
+body{background:linear-gradient(180deg,#f4f7fb,#eef2f7);color:var(--ink)}
 .shell{max-width:1180px;margin:20px auto;background:var(--canvas);border-radius:28px;padding:16px;box-shadow:var(--shadow)}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.topbar{position:sticky;top:12px;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.68);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:16px;padding:12px 16px}
 .logo{font-weight:900;font-size:1.1rem}.logo span{color:var(--cta)}
 .top-links{display:flex;gap:14px;flex-wrap:wrap}.top-links a{text-decoration:none;color:var(--muted);font-weight:700;font-size:.88rem}
 .top-cta{border:none;background:var(--cta);color:#fff;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
 .grid{margin-top:14px;display:grid;grid-template-columns:1.6fr 1fr;grid-template-areas:"hero side-offer" "journey side-schedule" "offer side-trainers";gap:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
-.hero{grid-area:hero;color:#fff;min-height:320px;background:#1d2734}
+.card{background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+.hero{grid-area:hero;color:#fff;min-height:320px;background:linear-gradient(135deg,#ff7a45,#ff9a3d 55%,#22c55e)}
 .hero h1{margin-top:14px;max-width:460px;line-height:1.08;font-size:clamp(1.8rem,3.8vw,3rem)}
-.hero p{margin-top:10px;max-width:430px;color:#e6edf5}
+.hero p{margin-top:10px;max-width:430px;color:#fff4ee}
 .hero-badge{display:inline-block;padding:7px 12px;border-radius:999px;background:rgba(111,207,61,.2);border:1px solid rgba(111,207,61,.45);font-size:.74rem;font-weight:800;color:#e2ffd2}
 .hero-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
 .btn{display:inline-block;text-decoration:none;border-radius:10px;padding:10px 14px;font-size:.86rem;font-weight:800}
 .btn-primary{background:var(--cta);color:#fff}.btn-outline{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3)}
 .hero-stats{margin-top:18px;display:flex;gap:18px;flex-wrap:wrap}.hero-stats strong{display:block}.hero-stats span{font-size:.78rem;color:#c4cfdb}
-.side-offer{grid-area:side-offer}.dark-mini{background:#212733;color:#fff;border-radius:18px;padding:14px}
-.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mini-item{background:#303744;border-radius:12px;padding:8px}
-.mini-item img{width:100%;height:46px;object-fit:cover;border-radius:8px}.mini-item span{display:block;margin-top:6px;font-size:.72rem;color:#d5ddeb}
-.mini-item.active{background:#8adf6a}.mini-item.active span{color:#162317;font-weight:700}
+.side-offer{grid-area:side-offer}.dark-mini{background:rgba(255,255,255,.55);color:var(--ink);border-radius:18px;padding:14px}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mini-item{background:rgba(255,255,255,.78);border-radius:12px;padding:8px;border:1px solid var(--line)}
+.mini-item img{width:100%;height:46px;object-fit:cover;border-radius:8px}.mini-item span{display:block;margin-top:6px;font-size:.72rem;color:var(--muted)}
+.mini-item.active{background:rgba(34,197,94,.16)}.mini-item.active span{color:#166534;font-weight:700}
 .journey{grid-area:journey;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.journey-left{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#1f2a39,#172130);padding:16px}
+.journey-left{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.76);padding:16px}
 .journey-left p{margin-top:8px;color:var(--muted);font-size:.9rem}
-.journey-right{border:1px solid var(--line);border-radius:18px;background:#192332;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.journey-right{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.56);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .journey-shot{border-radius:12px;overflow:hidden;min-height:88px}.journey-shot img{width:100%;height:100%;object-fit:cover}
 .side-schedule{grid-area:side-schedule}.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:.72rem;color:var(--muted);font-weight:700}
 .table{width:100%;border-collapse:collapse;font-size:.78rem}.table th,.table td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
 .status{background:var(--accent-soft);color:#4e9d2d;border-radius:999px;padding:4px 8px;font-size:.7rem;font-weight:800}
-.offer{grid-area:offer}.offer .inner{min-height:180px;border-radius:18px;color:#fff;padding:18px;background:#354252}
-.offer p{margin-top:8px;color:#d8e2ef}
+.offer{grid-area:offer}.offer .inner{min-height:180px;border-radius:18px;color:#fff;padding:18px;background:linear-gradient(135deg,#0f172a,#1e293b)}
+.offer p{margin-top:8px;color:#dbe7f5}
 .side-trainers{grid-area:side-trainers}.trainer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.trainer{border-radius:12px;overflow:hidden;background:#242a36;color:#fff;border:1px solid #394256}.trainer img{width:100%;height:88px;object-fit:cover}.trainer div{padding:8px;font-size:.72rem}
+.trainer{border-radius:12px;overflow:hidden;background:rgba(255,255,255,.76);color:var(--ink);border:1px solid var(--line)}.trainer img{width:100%;height:88px;object-fit:cover}.trainer div{padding:8px;font-size:.72rem}
 .links{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.quick{text-decoration:none;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 8px;color:var(--ink);font-size:.74rem;font-weight:800}
+.home-dash{margin-top:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dash-card{background:rgba(255,255,255,.74);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.dash-card small{display:block;color:var(--muted);font-weight:700}
+.dash-card strong{display:block;margin-top:8px;font-size:1.8rem}
+.dash-card .bar{margin-top:12px;height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.dash-card .fill{height:100%;background:linear-gradient(90deg,#ff7a45,#22c55e);width:0%}
+.dash-head{margin-top:14px;background:rgba(255,255,255,.76);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;padding:20px}
+.dash-head h3{font-size:1.25rem}
+.dash-head p{margin-top:8px;color:var(--muted)}
 @media (max-width:980px){.grid{grid-template-columns:1fr;grid-template-areas:"hero" "side-offer" "journey" "side-schedule" "offer" "side-trainers"}}
-@media (max-width:680px){.journey{grid-template-columns:1fr}.mini-grid,.trainer-grid,.links{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){.home-dash{grid-template-columns:1fr 1fr}}
+@media (max-width:680px){.journey{grid-template-columns:1fr}.mini-grid,.trainer-grid,.links,.home-dash{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -60,7 +70,34 @@ body{background:var(--bg);color:var(--ink)}
 <section class="card offer"><div class="inner"><h3>What We Offer</h3><p>From fat-loss programs to athletic conditioning and nutrition strategy, Go2Fit gives you everything in one platform.</p><div style="margin-top:12px"><a class="btn btn-primary" href="workout.html">View Programs</a></div></div></section>
 <section class="card side-trainers"><h3>Top Trainers</h3><div class="trainer-grid"><article class="trainer"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80" alt=""><div>Coach Adrian<br><small style="color:#aab4c4;">Strength</small></div></article><article class="trainer"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=80" alt=""><div>Coach Erika<br><small style="color:#aab4c4;">Conditioning</small></div></article><article class="trainer"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80" alt=""><div>Coach Martin<br><small style="color:#aab4c4;">Nutrition</small></div></article></div></section>
 </main>
+<section class="dash-head">
+<span class="hero-badge" style="color:#166534;background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25)">PERSONAL DASHBOARD</span>
+<h3 id="homeWelcome" style="margin-top:10px">Welcome to Go2Fit</h3>
+<p>Quick view of your personal stats, synced from your dashboard activity.</p>
+</section>
+<section class="home-dash">
+<article class="dash-card"><small>Steps</small><strong id="homeSteps">0</strong><div class="bar"><div class="fill" id="homeStepsFill"></div></div></article>
+<article class="dash-card"><small>Calories</small><strong id="homeCalories">0</strong><div class="bar"><div class="fill" id="homeCaloriesFill"></div></div></article>
+<article class="dash-card"><small>Distance</small><strong id="homeDistance">0.0</strong><div class="bar"><div class="fill" id="homeDistanceFill"></div></div></article>
+<article class="dash-card"><small>Active Minutes</small><strong id="homeMinutes">0</strong><div class="bar"><div class="fill" id="homeMinutesFill"></div></div></article>
+</section>
 <section class="links"><a class="quick" href="workout.html">Workout Plans</a><a class="quick" href="meals.html">Meal Planner</a><a class="quick" href="scraft.html#calculator">Diet Targets</a><a class="quick" href="fitrack.html">Membership</a></section>
 </div>
+<script>
+const users = JSON.parse(localStorage.getItem("fittracker-users") || "[]");
+const session = JSON.parse(localStorage.getItem("fittracker-session") || "null");
+const user = session ? users.find(u => u.email === session.email) : null;
+const stats = user?.stats || { steps:0, calories:0, distance:0, minutes:0 };
+if (user?.name) document.getElementById("homeWelcome").textContent = `Welcome back, ${user.name.split(" ")[0]}!`;
+document.getElementById("homeSteps").textContent = Number(stats.steps || 0).toLocaleString();
+document.getElementById("homeCalories").textContent = Number(stats.calories || 0).toLocaleString();
+document.getElementById("homeDistance").textContent = Number(stats.distance || 0).toFixed(1);
+document.getElementById("homeMinutes").textContent = Number(stats.minutes || 0);
+function setFill(id, value, target){ document.getElementById(id).style.width = `${Math.min((value/target)*100,100)}%`; }
+setFill("homeStepsFill", Number(stats.steps || 0), 10000);
+setFill("homeCaloriesFill", Number(stats.calories || 0), 2000);
+setFill("homeDistanceFill", Number(stats.distance || 0), 5);
+setFill("homeMinutesFill", Number(stats.minutes || 0), 30);
+</script>
 </body>
 </html>

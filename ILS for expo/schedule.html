@@ -19,6 +19,7 @@
     .nav-link:hover{color:#f5f9ff;background:rgba(255,255,255,.09);transform:translateY(-1px)}
     .nav-link.active{color:#fff;background:linear-gradient(135deg,rgba(255,122,69,.24),rgba(126,227,107,.18));border:1px solid rgba(255,122,69,.45);box-shadow:0 6px 18px rgba(255,122,69,.22)}
     main{max-width:1160px;margin:0 auto;padding:24px 20px 60px;position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .full-span{grid-column:1 / -1}
     section.glass{background:var(--surface-card);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
     h2{margin-bottom:8px;font-size:1.35rem}
     .sub{color:var(--muted);font-size:.88rem;margin-bottom:14px}
@@ -37,6 +38,8 @@
     .tag{font-size:.75rem;color:var(--muted);border:1px solid rgba(255,255,255,.12);padding:4px 8px;border-radius:999px}
     .empty{text-align:center;color:var(--muted);padding:14px;border:1px dashed rgba(255,255,255,.2);border-radius:12px}
     .danger-btn{padding:9px 10px;border-radius:10px;border:1px solid rgba(255,122,69,.35);background:rgba(255,122,69,.12);color:#ff9a79;font-weight:800;cursor:pointer}
+    .tiny-btn{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(37,37,37,.6);color:var(--secondary);cursor:pointer;font-weight:900;transition:all .25s ease}
+    .tiny-btn:hover{transform:translateY(-1px)}
     @media (max-width:980px){.topbar{width:calc(100% - 18px);margin-top:10px;padding:10px}.top-links{width:100%;justify-content:center;gap:6px}main{grid-template-columns:1fr;padding-top:16px}.grid-2{grid-template-columns:1fr}}
   </style>
 </head>
@@ -54,6 +57,44 @@
   </header>
 
   <main>
+    <section class="glass full-span">
+      <h2>Manual Schedule Planner</h2>
+      <p class="sub">Parang sa dashboard schedule: pwede kang mag-add ng exact workout, date, time, duration, at notes.</p>
+      <div class="grid-2" style="margin-bottom:18px;">
+        <div>
+          <div id="calendar-container" style="background:var(--surface-elevated);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.08);"></div>
+        </div>
+        <div>
+          <form id="manual-schedule-form">
+            <div class="form-group">
+              <label>Date & Time</label>
+              <input type="datetime-local" id="manual-schedule-date" required />
+            </div>
+            <div class="form-group">
+              <label>Duration (minutes)</label>
+              <input type="number" id="manual-schedule-duration" min="1" max="6000" placeholder="e.g. 60" required />
+            </div>
+            <div class="form-group">
+              <label>End Time (auto)</label>
+              <input type="text" id="manual-schedule-end" readonly placeholder="Will compute automatically" />
+            </div>
+            <div class="form-group">
+              <label>Planned Workout</label>
+              <input type="text" id="manual-schedule-title" placeholder="Running, Weightlifting, Yoga..." required />
+            </div>
+            <div class="form-group">
+              <label>Notes</label>
+              <textarea id="manual-schedule-notes" placeholder="Focus, reminders, target intensity"></textarea>
+            </div>
+            <button class="primary-btn" type="submit">Add Manual Schedule</button>
+          </form>
+        </div>
+      </div>
+      <div class="list" id="manual-schedule-list">
+        <div class="empty">No manual workouts scheduled yet.</div>
+      </div>
+    </section>
+
     <section class="glass">
       <h2>Workout Schedule</h2>
       <p class="sub">Simple AI-style generator: based sa goal mo + available workouts mo + available date/time.</p>
@@ -147,6 +188,7 @@
 
   <script>
     const STORAGE_KEY = "go2fit-auto-schedule";
+    const MANUAL_STORAGE_KEY = "go2fit-manual-schedule";
     const WORKOUT_OPTIONS = ["running","cycling","swimming","weightlifting","yoga","walking","other"];
     const DAY_OPTIONS = [
       { key: 0, label: "Sun" },
@@ -166,10 +208,14 @@
     };
 
     let scheduleData = [];
+    let calendarCurrentMonth = new Date().getMonth();
+    let calendarCurrentYear = new Date().getFullYear();
     const workoutChips = document.getElementById("workout-chips");
     const dayChips = document.getElementById("day-chips");
     const scheduleList = document.getElementById("schedule-list");
     const countText = document.getElementById("count-text");
+    const manualScheduleList = document.getElementById("manual-schedule-list");
+    let manualScheduleData = [];
 
     function titleCase(v){
       if(v === "other") return "Other";
@@ -297,6 +343,130 @@
         `).join("");
     }
 
+    function computeEndTimeIso(startLocalIso, durationMin){
+      const d = new Date(startLocalIso);
+      if (Number.isNaN(d.getTime())) return "";
+      return new Date(d.getTime() + (durationMin * 60 * 1000)).toISOString();
+    }
+
+    function renderManualSchedule(){
+      if (!manualScheduleData.length){
+        manualScheduleList.innerHTML = '<div class="empty">No manual workouts scheduled yet.</div>';
+        renderCalendar();
+        return;
+      }
+      manualScheduleList.innerHTML = manualScheduleData
+        .sort((a,b) => new Date(a.date) - new Date(b.date))
+        .map(item => `
+          <article class="item">
+            <div>
+              <strong>${item.title}</strong>
+              <div style="color:var(--muted);font-size:.84rem;margin-top:4px;">${new Date(item.date).toLocaleString()}</div>
+              <div class="schedule-tags">
+                <span class="tag">${item.durationMin} mins</span>
+                ${item.end ? `<span class="tag">Ends: ${new Date(item.end).toLocaleString()}</span>` : ""}
+                ${item.notes ? `<span class="tag">${item.notes}</span>` : ""}
+              </div>
+            </div>
+            <button class="danger-btn" onclick="deleteManualSchedule(${item.id})">Delete</button>
+          </article>
+        `).join("");
+      renderCalendar();
+    }
+
+    function renderCalendar(){
+      const container=document.getElementById("calendar-container");
+      if(!container) return;
+      const monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const dayNames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      const firstDay=new Date(calendarCurrentYear,calendarCurrentMonth,1).getDay();
+      const daysInMonth=new Date(calendarCurrentYear,calendarCurrentMonth+1,0).getDate();
+      let html=`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <button type="button" class="tiny-btn" onclick="changeCalendarMonth(-1)">‹</button>
+          <h3 style="margin:0;font-size:1.1rem;">${monthNames[calendarCurrentMonth]} ${calendarCurrentYear}</h3>
+          <button type="button" class="tiny-btn" onclick="changeCalendarMonth(1)">›</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;">
+      `;
+      dayNames.forEach(day=>{
+        html+=`<div style="text-align:center;font-weight:600;font-size:0.85rem;color:var(--muted);padding:8px;">${day}</div>`;
+      });
+      html+="</div><div style='display:grid;grid-template-columns:repeat(7,1fr);gap:4px;'>";
+      for(let i=0;i<firstDay;i++){
+        html+=`<div style="aspect-ratio:1;padding:4px;"></div>`;
+      }
+      for(let day=1;day<=daysInMonth;day++){
+        const dateStr=`${calendarCurrentYear}-${String(calendarCurrentMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+        const hasSchedule=manualScheduleData.some(s=>{
+          const sDate=new Date(s.date);
+          return sDate.getFullYear()===calendarCurrentYear && sDate.getMonth()===calendarCurrentMonth && sDate.getDate()===day;
+        });
+        const isToday=new Date().getFullYear()===calendarCurrentYear && new Date().getMonth()===calendarCurrentMonth && new Date().getDate()===day;
+        html+=`
+          <div style="aspect-ratio:1;padding:4px;">
+            <button type="button"
+              onclick="selectCalendarDate('${dateStr}')"
+              style="width:100%;height:100%;border:${isToday?"2px solid var(--neon-blue)":"1px solid rgba(255,255,255,0.1)"};border-radius:8px;background:${hasSchedule?"rgba(0,191,255,0.2)":"var(--surface-card)"};cursor:pointer;font-weight:${isToday?"700":"400"};color:${isToday?"var(--neon-blue)":"var(--secondary)"};"
+              ${isToday?"title='Today'":""}>
+              ${day}
+              ${hasSchedule?"<div style='font-size:0.6rem;margin-top:2px;color:var(--neon-blue);'>●</div>":""}
+            </button>
+          </div>
+        `;
+      }
+      html+="</div>";
+      container.innerHTML=html;
+    }
+
+    function changeCalendarMonth(delta){
+      calendarCurrentMonth+=delta;
+      if(calendarCurrentMonth<0){
+        calendarCurrentMonth=11;
+        calendarCurrentYear--;
+      }else if(calendarCurrentMonth>11){
+        calendarCurrentMonth=0;
+        calendarCurrentYear++;
+      }
+      renderCalendar();
+    }
+    window.changeCalendarMonth = changeCalendarMonth;
+
+    function selectCalendarDate(dateStr){
+      const dateInput=document.getElementById("manual-schedule-date");
+      if(dateInput){
+        const hours=new Date().getHours();
+        const minutes=new Date().getMinutes();
+        dateInput.value=`${dateStr}T${String(hours).padStart(2,"0")}:${String(minutes).padStart(2,"0")}`;
+      }
+    }
+    window.selectCalendarDate = selectCalendarDate;
+
+    function deleteManualSchedule(id){
+      manualScheduleData = manualScheduleData.filter(item => item.id !== id);
+      localStorage.setItem(MANUAL_STORAGE_KEY, JSON.stringify(manualScheduleData));
+      renderManualSchedule();
+    }
+    window.deleteManualSchedule = deleteManualSchedule;
+
+    function setupManualEndPreview(){
+      const startInput = document.getElementById("manual-schedule-date");
+      const durationInput = document.getElementById("manual-schedule-duration");
+      const endInput = document.getElementById("manual-schedule-end");
+      function updateEnd(){
+        const start = startInput.value;
+        const durationMin = parseInt(durationInput.value || "0", 10);
+        if (!start || !durationMin) {
+          endInput.value = "";
+          return;
+        }
+        const endIso = computeEndTimeIso(start, durationMin);
+        endInput.value = endIso ? new Date(endIso).toLocaleString() : "";
+      }
+      startInput.addEventListener("change", updateEnd);
+      durationInput.addEventListener("input", updateEnd);
+    }
+
     function deleteSchedule(id){
       scheduleData = scheduleData.filter(x => x.id !== id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(scheduleData));
@@ -347,12 +517,41 @@
       renderSchedule();
     });
 
+    document.getElementById("manual-schedule-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const start = document.getElementById("manual-schedule-date").value;
+      const durationMin = parseInt(document.getElementById("manual-schedule-duration").value, 10);
+      const title = document.getElementById("manual-schedule-title").value.trim();
+      const notes = document.getElementById("manual-schedule-notes").value.trim();
+      if (!start || !durationMin || !title){
+        alert("Complete the manual schedule form first.");
+        return;
+      }
+      manualScheduleData.unshift({
+        id: Date.now(),
+        date: start,
+        durationMin,
+        end: computeEndTimeIso(start, durationMin),
+        title,
+        notes
+      });
+      localStorage.setItem(MANUAL_STORAGE_KEY, JSON.stringify(manualScheduleData));
+      e.target.reset();
+      document.getElementById("manual-schedule-end").value = "";
+      renderManualSchedule();
+    });
+
     setupDayChips();
     setupWorkoutChips();
+    setupManualEndPreview();
     presetDates();
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     if (Array.isArray(saved)) scheduleData = saved;
+    const savedManual = JSON.parse(localStorage.getItem(MANUAL_STORAGE_KEY) || "[]");
+    if (Array.isArray(savedManual)) manualScheduleData = savedManual;
     renderSchedule();
+    renderManualSchedule();
+    renderCalendar();
   </script>
 </body>
 </html>
