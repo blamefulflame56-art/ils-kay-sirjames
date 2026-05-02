@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2Fit - Premium Checkout</title>
+<style>
+:root{--bg:#f4f7fb;--panel:#ffffff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#22c55e;--cta:#ff7a45;--shadow:0 14px 30px rgba(15,23,42,.08)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter","Segoe UI",system-ui,sans-serif}
+body{background:linear-gradient(180deg,#f4f7fb,#eef2f7);color:var(--ink)}
+.topbar{position:sticky;top:0;z-index:30;width:min(1160px,calc(100% - 28px));margin:14px auto 0;padding:12px 14px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(10,15,22,.88);backdrop-filter:blur(20px);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.header-logo{font-size:1.18rem;font-weight:900;text-decoration:none;letter-spacing:-.02em;background:linear-gradient(135deg,#00BFFF,#7EE36B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.top-links{display:flex;gap:8px;flex-wrap:wrap;padding:6px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.03)}
+.nav-link{color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:700;padding:9px 14px;border-radius:12px;transition:all .22s ease}
+.nav-link:hover{color:#f5f9ff;background:rgba(255,255,255,.09);transform:translateY(-1px)}
+.nav-link.active{color:#fff;background:linear-gradient(135deg,rgba(255,122,69,.24),rgba(126,227,107,.18));border:1px solid rgba(255,122,69,.45);box-shadow:0 6px 18px rgba(255,122,69,.22)}
+.wrap{max-width:980px;margin:24px auto;padding:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.logo{font-weight:900}.logo span{color:var(--cta)}
+.back{font-size:.84rem;text-decoration:none;color:var(--muted);font-weight:700}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+h1{font-size:1.35rem}
+p.sub{margin-top:6px;color:var(--muted);font-size:.9rem}
+.methods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.method{border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;font-size:.8rem;font-weight:700;text-align:center;background:#fff}
+.method.active{border-color:var(--accent);background:rgba(34,197,94,.08);color:#166534}
+.form{margin-top:14px;display:grid;gap:10px}
+label{font-size:.78rem;color:var(--muted);font-weight:700}
+input,select{margin-top:4px;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:.92rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pay{margin-top:14px;border:none;background:var(--cta);color:#fff;padding:11px 14px;border-radius:10px;font-weight:800;cursor:pointer;width:100%}
+.pay:disabled{opacity:.65;cursor:not-allowed}
+.small{margin-top:10px;font-size:.75rem;color:var(--muted)}
+.summary h3{font-size:1.05rem}
+.line{display:flex;justify-content:space-between;margin-top:10px;font-size:.9rem;color:#334155}
+.total{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-weight:900}
+.chip{display:inline-block;margin-top:10px;background:rgba(34,197,94,.12);color:#166534;border:1px solid rgba(34,197,94,.3);font-size:.72rem;padding:6px 10px;border-radius:999px}
+#status{margin-top:10px;font-size:.82rem;color:var(--muted)}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.methods{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="header-logo" href="Index.html">Go2Fit</a>
+  <nav class="top-links">
+    <a class="nav-link" href="Index.html">Home</a>
+    <a class="nav-link" href="workout.html">Workouts</a>
+    <a class="nav-link" href="meals.html">Meals</a>
+    <a class="nav-link" href="schedule.html">Schedule</a>
+    <a class="nav-link" href="fitrack.html">Account</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">GO<span>2</span>FIT CHECKOUT</div>
+    <a class="back" href="Index.html">&larr; Back to Home</a>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h1>Premium Membership Payment</h1>
+      <p class="sub">Choose your preferred payment method and complete checkout.</p>
+
+      <div class="methods" id="methodGroup">
+        <button class="method active" type="button" data-method="Card">Card</button>
+        <button class="method" type="button" data-method="GCash">GCash</button>
+        <button class="method" type="button" data-method="Bank Transfer">Bank Transfer</button>
+        <button class="method" type="button" data-method="PayPal">PayPal</button>
+        <button class="method" type="button" data-method="PayMongo">PayMongo</button>
+      </div>
+
+      <form class="form" id="paymentForm">
+        <div>
+          <label for="fullName">Full Name</label>
+          <input id="fullName" type="text" placeholder="Juan Dela Cruz" required>
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="name@email.com" required>
+        </div>
+        <div>
+          <label for="cardNum">Card / Account Number</label>
+          <input id="cardNum" type="text" placeholder="1234 5678 9012 3456" required>
+        </div>
+        <div class="row">
+          <div>
+            <label for="exp">Expiry / Date</label>
+            <input id="exp" type="text" placeholder="MM/YY" required>
+          </div>
+          <div>
+            <label for="cvv">CVV / PIN</label>
+            <input id="cvv" type="password" placeholder="***" required>
+          </div>
+        </div>
+        <div>
+          <label for="country">Country</label>
+          <select id="country">
+            <option>Philippines</option>
+            <option>Singapore</option>
+            <option>Malaysia</option>
+            <option>United States</option>
+          </select>
+        </div>
+        <button class="pay" id="payBtn" type="submit">Pay Premium Now</button>
+        <p id="status">Your payment is secured and encrypted.</p>
+        <p id="paymongoHint" class="small" style="display:none">PayMongo checkout will open in a secure hosted window. Replace the placeholder public key with your PayMongo test key to complete real integration.</p>
+      </form>
+      <p class="small">Demo flow only. No real charges are made unless PayMongo is connected.</p>
+    </section>
+
+    <aside class="card summary">
+      <h3>Order Summary</h3>
+      <span class="chip">Premium Plan - Monthly</span>
+      <div class="line"><span>Membership</span><strong>$15.00</strong></div>
+      <div class="line"><span>Service Fee</span><strong>$1.00</strong></div>
+      <div class="line total"><span>Total</span><strong>$16.00</strong></div>
+      <div class="line"><span>Payment Method</span><strong id="methodText">Card</strong></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const methodButtons = document.querySelectorAll("#methodGroup .method");
+const methodText = document.getElementById("methodText");
+const payBtn = document.getElementById("payBtn");
+const statusEl = document.getElementById("status");
+const paymongoHint = document.getElementById("paymongoHint");
+const form = document.getElementById("paymentForm");
+const cardNumInput = document.getElementById("cardNum");
+const expInput = document.getElementById("exp");
+const cvvInput = document.getElementById("cvv");
+
+const PAYMONGO_PUBLIC_KEY = "pk_test_YOUR_PUBLIC_KEY";
+const PAYMONGO_REDIRECT_URL = `${window.location.origin}/Index.html?payment=success`;
+let selectedMethod = "Card";
+let paymongoCheckout = null;
+let paymongoLoaded = false;
+
+function updatePaymentMethod(method) {
+  selectedMethod = method;
+  methodText.textContent = method;
+  payBtn.textContent = method === "PayMongo" ? "Pay with PayMongo" : "Pay Premium Now";
+  paymongoHint.style.display = method === "PayMongo" ? "block" : "none";
+  const useCardFields = method === "Card";
+  [cardNumInput, expInput, cvvInput].forEach((input) => {
+    input.required = useCardFields;
+    input.disabled = !useCardFields;
+    input.style.opacity = useCardFields ? "1" : "0.65";
+  });
+}
+
+function loadPaymongoSdk() {
+  const script = document.createElement("script");
+  script.src = "https://checkout.paymongo.com/checkout.js";
+  script.async = true;
+  script.onload = () => {
+    paymongoLoaded = true;
+    if (window.PayMongoCheckout) {
+      try {
+        const PaymongoCtor = window.PayMongoCheckout;
+        try {
+          paymongoCheckout = new PaymongoCtor(PAYMONGO_PUBLIC_KEY);
+        } catch {
+          paymongoCheckout = PaymongoCtor(PAYMONGO_PUBLIC_KEY);
+        }
+      } catch (error) {
+        console.warn("PayMongo SDK loaded, but checkout initialization failed", error);
+      }
+    }
+  };
+  script.onerror = () => {
+    console.warn("Failed to load PayMongo checkout SDK.");
+  };
+  document.head.appendChild(script);
+}
+
+async function handlePaymongoPayment() {
+  if (!paymongoLoaded || !paymongoCheckout || typeof paymongoCheckout.checkout !== "function") {
+    statusEl.textContent = "PayMongo checkout is not available. Completing demo payment...";
+    setTimeout(() => {
+      window.location.href = PAYMONGO_REDIRECT_URL;
+    }, 1200);
+    return;
+  }
+
+  const email = document.getElementById("email").value.trim();
+  const name = document.getElementById("fullName").value.trim();
+
+  try {
+    await paymongoCheckout.checkout({
+      amount: 1600,
+      currency: "PHP",
+      name: name || "Go2Fit Member",
+      description: "Go2Fit Premium Membership",
+      redirect_url: PAYMONGO_REDIRECT_URL,
+      billing: { email }
+    });
+  } catch (error) {
+    console.error(error);
+    statusEl.textContent = "Unable to complete PayMongo checkout. Redirecting to success fallback...";
+    setTimeout(() => {
+      window.location.href = PAYMONGO_REDIRECT_URL;
+    }, 1200);
+  }
+}
+
+methodButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    methodButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    updatePaymentMethod(btn.dataset.method || "Card");
+  });
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  payBtn.disabled = true;
+  statusEl.textContent = "Processing payment...";
+
+  if (selectedMethod === "PayMongo") {
+    await handlePaymongoPayment();
+    return;
+  }
+
+  setTimeout(() => {
+    statusEl.textContent = "Payment successful! Redirecting to homepage...";
+    window.location.href = "Index.html?payment=success";
+  }, 1200);
+});
+
+loadPaymongoSdk();
+</script>
+<style>
+footer{position:relative;z-index:1;background:rgba(17,17,17,.82);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.1);padding:44px 24px 24px;margin-top:28px}
+.footer-content{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:28px;margin-bottom:24px}
+.footer-section h3{font-size:1rem;font-weight:800;margin-bottom:12px;color:#9fe6ff}
+.footer-section a{display:block;color:#cbd5e1;text-decoration:none;margin-bottom:9px;transition:all .25s ease}
+.footer-section a:hover{color:#86efac;transform:translateX(3px)}
+.footer-bottom{text-align:center;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);color:#94a3b8}
+.footer-tagline{font-size:1rem;font-weight:800;margin-top:8px;color:#86efac}
+</style>
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <a href="Index.html">Home</a>
+      <a href="workout.html">Workouts</a>
+      <a href="meals.html">Meals</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="fitrack.html">Account</a>
+    </div>
+    <div class="footer-section">
+      <h3>Programs</h3>
+      <a href="scraft.html#workouts">Workout Programs</a>
+      <a href="scraft.html#meals">Meal Planning</a>
+      <a href="scraft.html#calculator">Diet Calculator</a>
+      <a href="banking-system.html">Premium Checkout</a>
+    </div>
+    <div class="footer-section">
+      <h3>Support</h3>
+      <a href="mailto:contact@go2fit.com">contact@go2fit.com</a>
+      <a href="#">Help Center</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Go2Fit. All rights reserved.</p>
+    <p class="footer-tagline">Go2Fit - Stay Consistent.</p>
+  </div>
+</footer>
+</body>
+</html>
